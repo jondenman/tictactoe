@@ -90,6 +90,7 @@ const board = (() => {
     }
 
     const markBoard = (mark, row, col) => {
+        console.log('mark is: ' + boardArray[row][col]);
         if (boardArray[row][col] == '') {
             boardArray[row][col] = mark;
             displayController.markSquare(flow.getCurrentMark(), row, col);
@@ -138,7 +139,6 @@ const displayController = (() => {
     }
 
     const changePlayerTurnMessage = (element, player) => {
-        console.log(player);
         element.textContent = `${player.name}'s Turn: ${player.marker}`;
     }
 
@@ -157,7 +157,6 @@ const gameFlow = (() => {
     let currentPlayer;
 
     const toggleMark = () => {
-        console.log(currentMark);
         if (currentMark == 'O') {
             currentMark = 'X';
         } else {
@@ -177,7 +176,7 @@ const gameFlow = (() => {
         playerOne = one;
         playerTwo = two;
         currentPlayer = one;
-        console.log(currentPlayer);
+        currentMark = currentPlayer.marker;
     }
 
     const endGame = () => {
@@ -218,13 +217,14 @@ function onClickSquare(e) {
     board.markBoard(flow.getCurrentMark(), row, col);
     isOver = board.isGameOver(row, col);
     if (isOver == true) {
-        messageDiv.textContent = `Game over. ${flow.getCurrentPlayer().name} wins!`;
-        flow.endGame();
+        messageDiv.textContent = `Game over. ${gameFlow.getCurrentPlayer().name} wins!`;
+        gameFlow.endGame();
+        board.clearBoard();
     } else if (isOver == -1) {
         messageDiv.textContent = `Game over. It's a tie.`;
     } else {
-        flow.switchPlayer();
-        displayController.changePlayerTurnMessage(messageDiv, flow.getCurrentPlayer()); 
+        gameFlow.switchPlayer();
+        displayController.changePlayerTurnMessage(messageDiv, gameFlow.getCurrentPlayer()); 
     }
     
 }
@@ -239,7 +239,6 @@ startButton.addEventListener('click', onStartClick);
 
 function onStartClick(e) {
     board.clearBoard();
-    console.log(board.boardArray);
     displayController.initializeBoard(board.boardArray);
 
     const squares = document.querySelectorAll('.square');
@@ -253,9 +252,8 @@ function onStartClick(e) {
 
     const playerOne = playerFactory(playerOneName, 'X');
     const playerTwo = playerFactory(playerTwoName, 'O');
-    console.log(playerOne.marker);
     
-    flow.initializePlayers(playerOne, playerTwo);
+    gameFlow.initializePlayers(playerOne, playerTwo);
 
-    displayController.changePlayerTurnMessage(messageDiv, flow.getCurrentPlayer());    
+    displayController.changePlayerTurnMessage(messageDiv, gameFlow.getCurrentPlayer());
 }
